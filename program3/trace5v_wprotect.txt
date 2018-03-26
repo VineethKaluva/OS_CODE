@@ -1,0 +1,19 @@
+# trace5v_wprotect.txt - test write protections
+quota     1
+# Initialize page (causes page to be allocated)
+fill      40000000  1000  aa
+# Set page non-writable
+writable  40000000  1000  0
+# Next line should generate a WritePermissionFaultException
+put       40000010  12
+compare   4000000f  aa    aa  aa
+# Next line should generate a WritePermissionFaultException
+fill      40000100  4     7f
+compare   400000ff  aa    aa  aa  aa  aa  aa  aa
+# Set page writable; following lines should run without exceptions
+writable  40000000  1000  1
+put       40000010  12
+compare   4000000f  aa    12  aa
+fill      40000100  4     7f
+compare   400000ff  aa    7f  7f  7f  7f  aa
+# end of trace

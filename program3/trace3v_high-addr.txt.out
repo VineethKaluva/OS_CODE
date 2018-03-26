@@ -1,0 +1,44 @@
+1:1:# trace3v_high-addr.txt - simple test of access to last page in address space.
+2:1:quota    1
+3:1:# Write a single byte to cause page to be allocated (and compare to expected)
+4:1:put      fffff7ff  ff
+5:1:compare  fffff7fe  00    ff  00
+6:1:# Make sure allocated page is cleared to 0 by checking scattered blocks of bytes
+7:1:compare  fffff000  0     0   0   0   0   0  0  0  0  0  0  0  0  0  0
+8:1:compare  fffff800  0     0   0   0   0   0  0  0  0  0  0  0  0  0  0
+9:1:compare  fffffff0  0     0   0   0   0   0  0  0  0  0  0  0  0  0  0
+10:1:fill     fffff000  1000  55
+11:1:put      fffff0a0  81    82  83  84  85
+12:1:put      fffff0a2  92
+13:1:compare  fffff0a0  81    82  92  84  85
+14:1:put      fffff0ff  aa
+15:1:compare  fffff0ff  aa
+16:1:fill     fffff00b  3     de
+17:1:compare  fffff00a  55     de  de  de  55
+18:1:fill     fffff020  10    cc
+19:1:fill     fffffff0  10    bb
+20:1:copy     fffffff1  fffff0a0  5
+21:1:compare  fffffff0  bb    81  82  92  84  85  bb bb bb bb bb bb bb bb bb bb
+22:1:dump     fffff000  100
+fffff000
+ 55 55 55 55 55 55 55 55 55 55 55 de de de 55 55
+ 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55
+ cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc
+ 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55
+ 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55
+ 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55
+ 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55
+ 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55
+ 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55
+ 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55
+ 81 82 92 84 85 55 55 55 55 55 55 55 55 55 55 55
+ 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55
+ 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55
+ 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55
+ 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55
+ 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 aa
+23:1:dump     fffffff0  10
+fffffff0
+ bb 81 82 92 84 85 bb bb bb bb bb bb bb bb bb bb
+24:1:# end of trace
+24:1:TERMINATED

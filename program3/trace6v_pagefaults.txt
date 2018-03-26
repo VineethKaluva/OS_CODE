@@ -1,0 +1,18 @@
+# trace6v_pagefaults.txt - test page fault exception handling
+quota    0a
+# Fill some pages to cause memory to be allocated
+fill     40000000  1000  40
+fill     753ff000  3000  75
+fill     0affe000  4000  0a
+fill     fffff000  1000  ff
+# Each of the following lines should generate a PageFaultException
+compare  3fffffff  0
+compare  40000fff  40    40
+dump     b001ffe   4
+# Test that copy completes up to the read page fault (copy page faults, compare should succeed)
+put      75401ffe  fe    ff
+copy     0affe000  75401000  1001
+compare  0affeffe  fe    ff
+# Test quota - the following line should terminate the process with quota exceeded
+put      e123afff  ef    01
+# end of trace
